@@ -1,3 +1,3 @@
 export default function App() {
-  return <div></div>;
+  return <div className="text-2xl">hi</div>;
 }
