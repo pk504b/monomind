@@ -10,8 +10,12 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
+    "@tiptap/pm": "^3.20.0",
+    "@tiptap/react": "^3.20.0",
+    "@tiptap/starter-kit": "^3.20.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.575.0",
     "radix-ui": "^1.4.3",
     "react": "^19.1.0",
@@ -21,6 +25,7 @@
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.3",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/chrome": "^0.1.1",
     "@types/node": "^25.3.2",
     "@types/react": "^19.1.8",
