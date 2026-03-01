@@ -4,15 +4,21 @@ import { Pomodoro } from "@/components/pomodoro";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock10, NotebookPen } from "lucide-react";
 import TodoList from "@/components/todos/todo-list";
+import { DatePicker } from "@/components/date-picker";
 
 export default function App() {
   return (
     <div className="grid h-screen w-full grid-cols-4 grid-rows-6 gap-4 p-2">
       {/* DAILY NOTES */}
       <Card className="col-span-2 row-span-6">
-        <CardHeader className="flex flex-row items-center justify- gap-2 text-xs uppercase text-muted-foreground">
-          <NotebookPen className="size-3" />
-          <CardTitle>Daily Notes</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between gap-2 text-xs uppercase text-muted-foreground">
+          <div className="flex flex-row items-center justify- gap-2 ">
+            <NotebookPen className="size-3" />
+            <CardTitle>Daily Notes</CardTitle>
+          </div>
+          <div>
+            <DatePicker />
+          </div>
         </CardHeader>
         <CardContent className="h-full overflow-y-auto mr-4">
           <Tiptap />
