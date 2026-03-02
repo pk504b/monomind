@@ -2,13 +2,6 @@ import Dexie, { type Table } from "dexie";
 import { useLiveQuery } from "dexie-react-hooks";
 import { format } from "date-fns";
 
-// export interface DailyLog {
-//   date: string; // YYYY-MM-DD
-//   notes: any;
-//   pomodoroCount: number;
-//   todos: Todo[];
-// }
-
 export interface Note {
   date: string;
   notes: any;
