@@ -22,7 +22,7 @@ import {
 import { exportToJson, importFromJson } from "@/lib/db-migration";
 import { useRef } from "react";
 
-export function SettingsDialog() {
+export default function SettingsDialog() {
   const { setTheme, theme: currentTheme } = useTheme();
   const settings = useLiveQuery(() => dbMethods.getSettings(), []);
   const resolvedSettings = settings || dbMethods.seedSettings;

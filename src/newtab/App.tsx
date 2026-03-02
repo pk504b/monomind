@@ -8,7 +8,7 @@ import { CheckCircle, Clock10, NotebookPen, Undo } from "lucide-react";
 import TodoList from "@/components/todos/todo-list";
 import { DatePicker } from "@/components/date-picker";
 import { isToday } from "date-fns";
-import SettingsMenu, { SettingsDialog } from "@/components/settings-menu";
+import SettingsDialog from "@/components/settings-dialog";
 import { useLiveQuery } from "dexie-react-hooks";
 import { dbMethods } from "@/lib/db";
 
