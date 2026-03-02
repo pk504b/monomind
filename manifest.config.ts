@@ -3,16 +3,12 @@ import pkg from "./package.json";
 
 export default defineManifest({
   manifest_version: 3,
-  name: pkg.name,
+  name: "Monomind: Your Second Brain in Your New Tab",
+  description:
+    "Transform your New Tab into a minimal, high-performance workspace designed to capture intent and archive your journey.",
   version: pkg.version,
   icons: {
     48: "public/logo.png",
-  },
-  action: {
-    default_icon: {
-      48: "public/logo.png",
-    },
-    default_popup: "src/popup/index.html",
   },
   permissions: ["newTab"],
   chrome_url_overrides: {
