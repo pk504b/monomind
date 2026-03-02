@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Clock from "@/components/clock";
 import Tiptap from "@/components/tiptap/tiptap";
 import { Pomodoro } from "@/components/pomodoro";
@@ -7,6 +8,8 @@ import TodoList from "@/components/todos/todo-list";
 import { DatePicker } from "@/components/date-picker";
 
 export default function App() {
+  const [date, setDate] = useState<Date>(new Date());
+
   return (
     <div className="grid h-screen w-full grid-cols-4 grid-rows-6 gap-4 p-2">
       {/* DAILY NOTES */}
@@ -17,11 +20,11 @@ export default function App() {
             <CardTitle>Daily Notes</CardTitle>
           </div>
           <div>
-            <DatePicker />
+            <DatePicker date={date} setDate={setDate} />
           </div>
         </CardHeader>
         <CardContent className="h-full overflow-y-auto mr-4">
-          <Tiptap />
+          <Tiptap date={date} />
         </CardContent>
       </Card>
 
@@ -32,9 +35,9 @@ export default function App() {
           <CardTitle className="">Tasks</CardTitle>
         </CardHeader>
         <CardContent className="h-full flex flex-col gap-3">
-          <TodoList storageKey="todos-today-v2" type="today" />
+          <TodoList date={date} type="today" />
           <hr className="" />
-          <TodoList storageKey="todos-later-v2" type="later" />
+          <TodoList date={date} type="later" />
         </CardContent>
       </Card>
 
@@ -60,7 +63,7 @@ export default function App() {
           <CardTitle>Pomodoro</CardTitle>
         </CardHeader>
         <CardContent className="h-full">
-          <Pomodoro />
+          <Pomodoro date={date} />
         </CardContent>
       </Card>
 
@@ -75,32 +78,5 @@ export default function App() {
         </CardContent>
       </Card>
     </div>
-    // <main className="h-screen w-screen overflow-hidden grid grid-cols-2 gap-2 p-2">
-    //   <section className="col-span-1">
-    //     <Card className="">
-    //       <CardHeader className="flex flex-row items-center justify- gap-2 text-xs uppercase text-muted-foreground">
-    //         <NotebookPen className="size-3" />
-    //         <CardTitle>Daily Notes</CardTitle>
-    //       </CardHeader>
-    //       <CardContent className="max-h-[86vh] overflow-y-auto mr-4">
-    //         <Tiptap />
-    //       </CardContent>
-    //     </Card>
-    //   </section>
-
-    //   <aside className="grid grid-rows-3 gap-2">
-    //     <div className="row-span-2 grid grid-cols-2 gap-2">
-    //       <section className="">
-    //         <Todos />
-    //       </section>
-    //       <section className="">
-    //         <Pomodoro />
-    //       </section>
-    //     </div>
-    //     <section className="row-span-1 overflow-y-hidden">
-    //       <Clock is12Hour={true} />
-    //     </section>
-    //   </aside>
-    // </main>
   );
 }

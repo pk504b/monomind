@@ -1,91 +1,80 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Todo } from "@/lib/types";
+import { useEffect, useRef } from "react";
 import { Badge } from "../ui/badge";
 import TodoItem from "./todo-item";
 import { cn } from "@/lib/utils";
+import { dbMethods, useLiveQuery, type Todo } from "@/lib/db";
 
 interface Props {
   type: "today" | "later";
-  storageKey: string;
-  //   title: string;
-  //   icon: any;
+  date: Date;
 }
-export default function TodoList({
-  type,
-  storageKey,
-  //   title,
-  //   icon: Icon,
-}: Props) {
-  const [todos, setTodos] = useState<Todo[]>(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) return JSON.parse(saved);
-    return [
-      {
-        id: Math.random().toString(36).substr(2, 9),
-        text: "",
-        completed: false,
-      },
-    ];
-  });
+export default function TodoList({ type, date }: Props) {
+  const rawTodos = useLiveQuery(
+    () => dbMethods.getTodos(date, type),
+    [date, type],
+  );
+  const todos = rawTodos || [];
+  const isInitializing = useRef(false);
 
+  // Reset initialization flag when date or type changes
   useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(todos));
-  }, [todos, storageKey]);
+    isInitializing.current = false;
+  }, [date, type]);
 
-  const handleToggle = (id: string) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
-    );
+  // Initialize with an empty task if none exist for this date/type
+  useEffect(() => {
+    if (
+      rawTodos !== undefined &&
+      rawTodos.length === 0 &&
+      !isInitializing.current
+    ) {
+      isInitializing.current = true;
+      dbMethods.addTodo(date, type);
+    }
+  }, [rawTodos, date, type]);
+
+  const handleToggle = (id: string, completed: boolean) => {
+    dbMethods.updateTodo(id, { completed });
   };
 
   const handleUpdate = (id: string, text: string) => {
-    setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, text } : t)));
+    dbMethods.updateTodo(id, { text });
   };
 
-  const handleRemove = (id: string) => {
+  const handleRemove = async (id: string) => {
     if (todos.length === 1 && todos[0].text === "") return;
-    setTodos((prev) => {
-      const filtered = prev.filter((t) => t.id !== id);
-      return filtered.length > 0
-        ? filtered
-        : [
-            {
-              id: Math.random().toString(36).substr(2, 9),
-              text: "",
-              completed: false,
-            },
-          ];
-    });
+    await dbMethods.deleteTodo(id);
   };
 
-  const handleEnter = (currentId: string) => {
-    const newTodo: Todo = {
-      id: Math.random().toString(36).substr(2, 9),
-      text: "",
-      completed: false,
-    };
-    const currentIndex = todos.findIndex((t) => t.id === currentId);
-    const newTodos = [...todos];
-    newTodos.splice(currentIndex + 1, 0, newTodo);
-    setTodos(newTodos);
-
+  const handleEnter = async (currentId: string) => {
+    const currentIndex = todos.findIndex((t: Todo) => t.id === currentId);
+    let targetCreatedAt = Date.now();
+    if (currentIndex !== -1 && currentIndex < todos.length - 1) {
+      // Insert between current and next
+      targetCreatedAt =
+        (todos[currentIndex].createdAt + todos[currentIndex + 1].createdAt) / 2;
+    } else {
+      // Add to the end
+      targetCreatedAt = Date.now();
+    }
+    const newTodo = await dbMethods.addTodo(date, type, "", targetCreatedAt);
     // Smooth focus on the newly created element
     setTimeout(() => {
       const nextInput = document.getElementById(
         `input-${newTodo.id}`,
       ) as HTMLInputElement;
       nextInput?.focus();
-    }, 10);
+    }, 50);
   };
 
-  const handleBackspace = (currentId: string) => {
+  const handleBackspace = async (currentId: string) => {
     if (todos.length === 1) return;
-    const currentIndex = todos.findIndex((t) => t.id === currentId);
+    const currentIndex = todos.findIndex((t: Todo) => t.id === currentId);
     if (currentIndex > 0) {
       const prevId = todos[currentIndex - 1].id;
-      handleRemove(currentId);
+      await dbMethods.deleteTodo(currentId);
       setTimeout(() => {
         const prevInput = document.getElementById(
           `input-${prevId}`,
@@ -97,7 +86,7 @@ export default function TodoList({
           prevInput.value = "";
           prevInput.value = val;
         }
-      }, 10);
+      }, 50);
     }
   };
 
@@ -108,11 +97,7 @@ export default function TodoList({
           variant="ghost"
           className="uppercase opacity-20 tracking-[0.5em]"
         >
-          {type === "today" ? (
-            <span className="">Today</span>
-          ) : (
-            <span className="">Later</span>
-          )}
+          {type === "today" ? "Today" : "Later"}
         </Badge>
       </div>
       <div className="relative overflow-y-auto pl-4 h-full">
@@ -121,7 +106,7 @@ export default function TodoList({
             <TodoItem
               key={todo.id}
               todo={todo}
-              onToggle={handleToggle}
+              onToggle={() => handleToggle(todo.id, !todo.completed)}
               onUpdate={handleUpdate}
               onRemove={handleRemove}
               onEnter={handleEnter}

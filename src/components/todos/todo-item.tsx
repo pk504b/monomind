@@ -2,7 +2,8 @@ import { X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { cn } from "@/lib/utils";
-import { Todo } from "@/lib/types";
+import { Todo } from "@/lib/db";
+import { useState, useEffect, useRef } from "react";
 
 interface Props {
   todo: Todo;
@@ -21,6 +22,32 @@ export default function TodoItem({
   onEnter,
   onBackspace,
 }: Props) {
+  const [localText, setLocalText] = useState(todo.text);
+  const timeoutRef = useRef<any>(null);
+
+  // Sync with external updates (like date change or other clients)
+  useEffect(() => {
+    setLocalText(todo.text);
+  }, [todo.text]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setLocalText(val);
+
+    // Debounce DB update
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      onUpdate(todo.id, val);
+    }, 500);
+  };
+
+  const handleBlur = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (localText !== todo.text) {
+      onUpdate(todo.id, localText);
+    }
+  };
+
   return (
     <div className="group flex items-center gap-2">
       <div className="">
@@ -34,13 +61,17 @@ export default function TodoItem({
       <input
         type="text"
         id={`input-${todo.id}`}
-        value={todo.text}
-        onChange={(e) => onUpdate(todo.id, e.target.value)}
+        value={localText}
+        onChange={handleChange}
+        onBlur={handleBlur}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
+            // Ensure last text is saved before enter
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            onUpdate(todo.id, localText);
             onEnter(todo.id);
-          } else if (e.key === "Backspace" && todo.text === "") {
+          } else if (e.key === "Backspace" && localText === "") {
             e.preventDefault();
             onBackspace(todo.id);
           }

@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -9,9 +8,12 @@ import {
 import { addDays, format } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function DatePicker() {
-  const [date, setDate] = React.useState<Date>(new Date());
+interface DatePickerProps {
+  date: Date;
+  setDate: (date: Date) => void;
+}
 
+export function DatePicker({ date, setDate }: DatePickerProps) {
   return (
     <div className="flex items-center gap-2">
       {/* PREV BUTTON */}
@@ -39,7 +41,7 @@ export function DatePicker() {
           <Calendar
             mode="single"
             selected={date}
-            onSelect={setDate}
+            onSelect={(d) => d && setDate(d)}
             defaultMonth={date}
             required
             className="shadow-xl"

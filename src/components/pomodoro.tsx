@@ -2,28 +2,35 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, Pause, RotateCcw, Coffee, Brain, Hash } from "lucide-react";
-
 import { ProgressCircular } from "./progress-circular";
+import { dbMethods, useLiveQuery } from "@/lib/db";
 
 type Mode = "focus" | "short-break" | "long-break";
 
-export function Pomodoro() {
+export function Pomodoro({ date }: { date: Date }) {
+  const log = useLiveQuery(() => dbMethods.getPomoCount(date), [date]);
+  const sessionsCompleted = log?.count || 0;
+
   const getModeSettings = useCallback((m: Mode) => {
     switch (m) {
       case "focus":
-        return { time: 25 * 1, label: "Focus", color: "bg-primary" };
+        return { time: 10 * 1, label: "Focus", color: "bg-primary" };
       case "short-break":
-        return { time: 5 * 1, label: "Short Break", color: "bg-green-500" };
+        return { time: 3 * 1, label: "Short Break", color: "bg-green-500" };
       case "long-break":
-        return { time: 15 * 1, label: "Long Break", color: "bg-blue-500" };
+        return { time: 5 * 1, label: "Long Break", color: "bg-blue-500" };
     }
   }, []);
 
   const [mode, setMode] = useState<Mode>("focus");
   const [timeLeft, setTimeLeft] = useState(getModeSettings("focus").time);
   const [isActive, setIsActive] = useState(false);
-  const [sessionsCompleted, setSessionsCompleted] = useState(0);
-  const [focusSessionsInCycle, setFocusSessionsInCycle] = useState(1);
+  const [focusSessionsInCycle, setFocusSessionsInCycle] = useState(0);
+
+  // Sync timeLeft when mode changes or date resets
+  // useEffect(() => {
+  //   setTimeLeft(getModeSettings(mode).time);
+  // }, [mode, getModeSettings]);
 
   const playBeep = useCallback(() => {
     try {
@@ -57,13 +64,11 @@ export function Pomodoro() {
   }, [mode, getModeSettings]);
 
   const switchMode = useCallback(() => {
+    // console.log(mode);
     playBeep();
 
     if (mode === "focus") {
-      const newFocusCount = focusSessionsInCycle + 1;
-      setFocusSessionsInCycle(newFocusCount);
-
-      if (newFocusCount >= 4) {
+      if (focusSessionsInCycle >= 4) {
         setMode("long-break");
         setTimeLeft(getModeSettings("long-break").time);
         setFocusSessionsInCycle(0);
@@ -72,13 +77,21 @@ export function Pomodoro() {
         setTimeLeft(getModeSettings("short-break").time);
       }
 
-      setSessionsCompleted((prev) => prev + 1);
+      dbMethods.setPomoCount(date, sessionsCompleted + 1);
     } else {
       setMode("focus");
       setTimeLeft(getModeSettings("focus").time);
+      setFocusSessionsInCycle((prev) => prev + 1);
     }
     setIsActive(false);
-  }, [mode, focusSessionsInCycle, playBeep, getModeSettings]);
+  }, [
+    mode,
+    focusSessionsInCycle,
+    playBeep,
+    getModeSettings,
+    date,
+    sessionsCompleted,
+  ]);
 
   useEffect(() => {
     let interval: number = 0;
@@ -113,11 +126,7 @@ export function Pomodoro() {
         >
           <div className="flex flex-col items-center justify-center relative">
             <Badge variant="ghost" className="absolute -top-6">
-              {mode === "focus" ? (
-                <Brain className="" />
-              ) : (
-                <Coffee className="" />
-              )}
+              {mode === "focus" ? <Brain /> : <Coffee />}
               {getModeSettings(mode).label}
             </Badge>
 
@@ -127,7 +136,12 @@ export function Pomodoro() {
               size="sm"
               variant={isActive ? "outline" : "default"}
               className="absolute -bottom-14"
-              onClick={() => setIsActive(!isActive)}
+              onClick={() => {
+                if (mode === "focus" && focusSessionsInCycle === 0) {
+                  setFocusSessionsInCycle(1);
+                }
+                setIsActive(!isActive);
+              }}
             >
               {isActive ? <Pause /> : <Play />}
               {isActive ? "Pause" : "Start"}
