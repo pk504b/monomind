@@ -19,9 +19,11 @@ export default function TodoList({ type, date }: Props) {
   const isInitializing = useRef(false);
 
   // Reset initialization flag when date or type changes
+  const dateDep = type === "today" ? date : "global";
+
   useEffect(() => {
     isInitializing.current = false;
-  }, [date, type]);
+  }, [dateDep, type]);
 
   // Initialize with an empty task if none exist for this date/type
   useEffect(() => {
@@ -33,7 +35,7 @@ export default function TodoList({ type, date }: Props) {
       isInitializing.current = true;
       dbMethods.addTodo(date, type);
     }
-  }, [rawTodos, date, type]);
+  }, [rawTodos, dateDep, type, date]);
 
   const handleToggle = (id: string, completed: boolean) => {
     dbMethods.updateTodo(id, { completed });
@@ -95,7 +97,7 @@ export default function TodoList({ type, date }: Props) {
       <div className="absolute top-1/2 -left-12 -translate-y-1/2 -rotate-90">
         <Badge
           variant="ghost"
-          className="uppercase opacity-20 tracking-[0.5em]"
+          className="uppercase opacity tracking-[0.4em] text-[10px] font-semibold text-white/20"
         >
           {type === "today" ? "Today" : "Later"}
         </Badge>

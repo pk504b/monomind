@@ -93,6 +93,9 @@ export const dbMethods = {
 
   // Todos
   async getTodos(date: Date, type: "today" | "later") {
+    if (type === "later") {
+      return await db.todos.where({ type: "later" }).sortBy("createdAt");
+    }
     const dateStr = format(date, "yyyy-MM-dd");
     return await db.todos.where({ date: dateStr, type }).sortBy("createdAt");
   },
@@ -103,8 +106,8 @@ export const dbMethods = {
     text: string = "",
     createdAt: number = Date.now(),
   ) {
-    const dateStr = format(date, "yyyy-MM-dd");
-    const id = Math.random().toString(36).substr(2, 9);
+    const dateStr = type === "later" ? "global" : format(date, "yyyy-MM-dd");
+    const id = Math.random().toString(36).substring(2, 9);
     const newTodo: Todo = {
       id,
       date: dateStr,
