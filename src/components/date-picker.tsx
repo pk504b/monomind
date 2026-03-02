@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/popover";
 import { addDays, format } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 interface DatePickerProps {
   date: Date;
@@ -14,6 +15,8 @@ interface DatePickerProps {
 }
 
 export function DatePicker({ date, setDate }: DatePickerProps) {
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="flex items-center gap-2">
       {/* PREV BUTTON */}
@@ -26,7 +29,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
       </Button>
 
       {/* DATE PICKER */}
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="secondary"
@@ -41,7 +44,12 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
           <Calendar
             mode="single"
             selected={date}
-            onSelect={(d) => d && setDate(d)}
+            onSelect={(d) => {
+              if (d) {
+                setDate(d);
+                setOpen(false);
+              }
+            }}
             defaultMonth={date}
             required
             className="shadow-xl"

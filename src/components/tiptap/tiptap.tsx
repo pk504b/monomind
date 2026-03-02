@@ -4,6 +4,7 @@ import { TaskItem, TaskList } from "@tiptap/extension-list";
 import { Placeholder } from "@tiptap/extensions";
 import { useEffect, useRef } from "react";
 import { dbMethods, useLiveQuery } from "@/lib/db";
+import { format } from "date-fns";
 
 const Tiptap = ({ date }: { date: Date }) => {
   const notes = useLiveQuery(() => dbMethods.getNotes(date), [date]);
@@ -31,20 +32,31 @@ const Tiptap = ({ date }: { date: Date }) => {
 
   // Update editor content when date changes or DB entry is loaded
   useEffect(() => {
-    if (!editor || notes === undefined) return;
+    if (!editor) return;
 
+    const dateStr = format(date, "yyyy-MM-dd");
+    const dateChanged = lastDateRef.current.getTime() !== date.getTime();
     const currentContent = editor.getJSON();
-    const newContent = notes?.notes || { type: "doc", content: [] };
-    const dateChanged = lastDateRef.current !== date;
 
-    if (dateChanged || !editor.isFocused) {
+    // Explicitly check for stale notes from previous queries
+    const isStale = notes && notes.date !== dateStr;
+    const newContent = (!isStale && notes?.notes) || {
+      type: "doc",
+      content: [],
+    };
+
+    if (dateChanged) {
+      // Immediate clear on date change to avoid ghosting prev day's content
+      editor.commands.setContent(
+        { type: "doc", content: [] },
+        { emitUpdate: false },
+      );
+      lastDateRef.current = date;
+    } else if (!editor.isFocused && notes !== undefined && !isStale) {
+      // Sync from DB only when not focused and notes belong to current date
       if (JSON.stringify(currentContent) !== JSON.stringify(newContent)) {
         editor.commands.setContent(newContent, { emitUpdate: false });
       }
-    }
-
-    if (dateChanged) {
-      lastDateRef.current = date;
     }
   }, [notes, editor, date]);
 
