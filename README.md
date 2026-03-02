@@ -1,6 +1,6 @@
-# Monomind: Your Second Brain in Your New Tab
+# Monomind: Your Second Brain in New Tab
 
-Transform your New Tab into a minimal, high-performance workspace designed to capture intent and archive your journey.
+Transform your New Tab into a minimal, deep focus workspace designed to capture intent and archive your journey.
 
 ---
 
@@ -16,7 +16,7 @@ Monomind treats time as the primary filing system for your thoughts. It combines
 
 - **Deep Writing**: A distraction-free, rich-text editor to document reflections, brain-dumps, or daily intentions. Supports Markdown.
 - **Date-Indexed Notes**: Every day starts with a blank slate. Switch between dates to view your archival history.
-- **Auto-Save**: Never lose a thought with real-time IndexedDB persistence.
+- **Auto-Save**: Never lose a thought with real-time persistence to your browser's memory.
 
 ### ✅ Dual-Layer Task Management
 

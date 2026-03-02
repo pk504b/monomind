@@ -34,8 +34,8 @@ export class ProductivityDatabase extends Dexie {
   settings!: Table<Settings>;
 
   constructor() {
-    super("ProductivityDBv2");
-    this.version(3).stores({
+    super("MonomindDB");
+    this.version(1).stores({
       notes: "date",
       todos: "id, date, type, createdAt",
       pomodoro: "date",
