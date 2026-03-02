@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import {
+  Download,
   LaptopMinimal,
   Moon,
   Settings,
   Sun,
   SunMoon,
   Timer,
+  Upload,
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { dbMethods, useLiveQuery } from "@/lib/db";
@@ -17,14 +19,24 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
+import { exportToJson, importFromJson } from "@/lib/db-migration";
+import { useRef } from "react";
 
 export function SettingsDialog() {
   const { setTheme, theme: currentTheme } = useTheme();
   const settings = useLiveQuery(() => dbMethods.getSettings(), []);
   const resolvedSettings = settings || dbMethods.seedSettings;
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const toggleIs12Hour = (val: boolean) => {
     dbMethods.updateSettings({ is12Hour: val });
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      importFromJson(file);
+    }
   };
 
   return (
@@ -105,6 +117,42 @@ export function SettingsDialog() {
                 24 Hour
               </Button>
             </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="text-xs uppercase text-muted-foreground">
+              Data Management
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="flex-1 gap-2"
+                onClick={exportToJson}
+              >
+                <Download className="size-4" />
+                Export JSON
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="flex-1 gap-2"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="size-4" />
+                Import JSON
+              </Button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept=".json"
+                onChange={handleImport}
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground italic">
+              * Importing will replace all current data.
+            </p>
           </div>
         </div>
 
