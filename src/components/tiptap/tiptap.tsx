@@ -15,7 +15,7 @@ const Tiptap = ({ date }: { date: Date }) => {
       TaskList,
       TaskItem.configure({ nested: true }),
       Placeholder.configure({
-        placeholder: "Write something..",
+        placeholder: "Start writing..",
       }),
     ],
     onUpdate: ({ editor }) => {
@@ -27,14 +27,24 @@ const Tiptap = ({ date }: { date: Date }) => {
     immediatelyRender: false,
   });
 
+  const lastDateRef = useRef(date);
+
   // Update editor content when date changes or DB entry is loaded
   useEffect(() => {
-    if (editor) {
-      const currentContent = editor.getJSON();
-      const newContent = notes?.notes || "";
-      if (currentContent !== newContent) {
+    if (!editor || notes === undefined) return;
+
+    const currentContent = editor.getJSON();
+    const newContent = notes?.notes || { type: "doc", content: [] };
+    const dateChanged = lastDateRef.current !== date;
+
+    if (dateChanged || !editor.isFocused) {
+      if (JSON.stringify(currentContent) !== JSON.stringify(newContent)) {
         editor.commands.setContent(newContent, { emitUpdate: false });
       }
+    }
+
+    if (dateChanged) {
+      lastDateRef.current = date;
     }
   }, [notes, editor, date]);
 

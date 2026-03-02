@@ -144,6 +144,11 @@
   background: #888;
 }
 
+html, body {
+  font-family: 'Lexend', sans-serif;
+  @apply text-base;
+}
+
 .tiptap {
   @apply outline-none prose dark:prose-invert leading-normal w-full max-w-none min-h-[80vh];
 
@@ -153,6 +158,10 @@
 
     li p {
         @apply my-0;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply mt-0;
     }
 
     ul[data-type="taskList"] {

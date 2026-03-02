@@ -14,11 +14,11 @@ export function Pomodoro({ date }: { date: Date }) {
   const getModeSettings = useCallback((m: Mode) => {
     switch (m) {
       case "focus":
-        return { time: 10 * 1, label: "Focus", color: "bg-primary" };
+        return { time: 25 * 60, label: "Focus" };
       case "short-break":
-        return { time: 3 * 1, label: "Short Break", color: "bg-green-500" };
+        return { time: 5 * 60, label: "Short Break" };
       case "long-break":
-        return { time: 5 * 1, label: "Long Break", color: "bg-blue-500" };
+        return { time: 15 * 60, label: "Long Break" };
     }
   }, []);
 
@@ -26,11 +26,6 @@ export function Pomodoro({ date }: { date: Date }) {
   const [timeLeft, setTimeLeft] = useState(getModeSettings("focus").time);
   const [isActive, setIsActive] = useState(false);
   const [focusSessionsInCycle, setFocusSessionsInCycle] = useState(0);
-
-  // Sync timeLeft when mode changes or date resets
-  // useEffect(() => {
-  //   setTimeLeft(getModeSettings(mode).time);
-  // }, [mode, getModeSettings]);
 
   const playBeep = useCallback(() => {
     try {
@@ -60,11 +55,12 @@ export function Pomodoro({ date }: { date: Date }) {
 
   const resetTimer = useCallback(() => {
     setIsActive(false);
-    setTimeLeft(getModeSettings(mode).time);
-  }, [mode, getModeSettings]);
+    setMode("focus");
+    setFocusSessionsInCycle(0);
+    setTimeLeft(getModeSettings("focus").time);
+  }, [getModeSettings]);
 
   const switchMode = useCallback(() => {
-    // console.log(mode);
     playBeep();
 
     if (mode === "focus") {
