@@ -1,25 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Clock from "@/components/clock";
 import Tiptap from "@/components/tiptap/tiptap";
 import { Pomodoro } from "@/components/pomodoro";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  CheckCircle,
-  Clock10,
-  NotebookPen,
-  Settings,
-  Undo,
-} from "lucide-react";
+import { CheckCircle, Clock10, NotebookPen, Undo } from "lucide-react";
 import TodoList from "@/components/todos/todo-list";
 import { DatePicker } from "@/components/date-picker";
 import { isToday } from "date-fns";
+import SettingsMenu from "@/components/settings-menu";
+import { useLiveQuery } from "dexie-react-hooks";
+import { dbMethods } from "@/lib/db";
 
 export default function App() {
   const [date, setDate] = useState<Date>(new Date());
+  const settings = useLiveQuery(() => dbMethods.getSettings(), []);
+
+  useEffect(() => {
+    dbMethods.ensureSettings();
+  }, []);
+
+  const is12Hour = settings?.is12Hour ?? dbMethods.seedSettings.is12Hour;
 
   return (
-    <div className="grid h-screen w-full grid-cols-4 grid-rows-6 gap-4 p-2">
+    <div className="grid h-screen w-full overflow-hidden grid-cols-4 grid-rows-6 gap-4 p-2">
       {/* DAILY NOTES */}
       <Card className="col-span-2 row-span-6">
         <CardHeader className="select-none flex flex-row items-center justify-between gap-2 text-xs uppercase text-muted-foreground">
@@ -93,9 +97,11 @@ export default function App() {
           <CardTitle>Clock</CardTitle>
         </CardHeader>
         <CardContent>
-          <Clock is12Hour={true} />
+          <Clock is12Hour={is12Hour} />
         </CardContent>
       </Card>
+
+      <SettingsMenu />
     </div>
   );
 }

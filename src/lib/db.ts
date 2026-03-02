@@ -21,17 +21,25 @@ export interface Pomodoro {
   count: number;
 }
 
+export interface Settings {
+  id: string; // 'global'
+  theme: "light" | "dark" | "system";
+  is12Hour: boolean;
+}
+
 export class ProductivityDatabase extends Dexie {
   notes!: Table<Note>;
   todos!: Table<Todo>;
   pomodoro!: Table<Pomodoro>;
+  settings!: Table<Settings>;
 
   constructor() {
     super("ProductivityDBv2");
-    this.version(2).stores({
+    this.version(3).stores({
       notes: "date",
       todos: "id, date, type, createdAt",
       pomodoro: "date",
+      settings: "id",
     });
   }
 }
@@ -132,6 +140,31 @@ export const dbMethods = {
     // Basic implementation: replace all for that date/type if needed
     // But put is enough for individual updates
     return await db.todos.bulkPut(todos);
+  },
+
+  // Settings
+  seedSettings: {
+    id: "global",
+    theme: "system" as const,
+    is12Hour: true,
+  },
+
+  async getSettings() {
+    const s = await db.settings.get("global");
+    return s || this.seedSettings;
+  },
+
+  async ensureSettings() {
+    const settings = await db.settings.get("global");
+    if (!settings) {
+      await db.settings.put(this.seedSettings);
+      return this.seedSettings;
+    }
+    return settings;
+  },
+
+  async updateSettings(updates: Partial<Settings>) {
+    return await db.settings.update("global", updates);
   },
 };
 
