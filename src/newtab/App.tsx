@@ -3,9 +3,11 @@ import Clock from "@/components/clock";
 import Tiptap from "@/components/tiptap/tiptap";
 import { Pomodoro } from "@/components/pomodoro";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Clock10, NotebookPen } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, Clock10, NotebookPen, Undo } from "lucide-react";
 import TodoList from "@/components/todos/todo-list";
 import { DatePicker } from "@/components/date-picker";
+import { isToday } from "date-fns";
 
 export default function App() {
   const [date, setDate] = useState<Date>(new Date());
@@ -19,7 +21,18 @@ export default function App() {
             <NotebookPen className="size-3" />
             <CardTitle>Daily Notes</CardTitle>
           </div>
-          <div>
+          <div className="flex items-center gap-2">
+            {!isToday(date) && (
+              <Button
+                size="xs"
+                variant="secondary"
+                onClick={() => setDate(new Date())}
+                className="animate-in fade-in slide-in-from-right-1"
+              >
+                <Undo />
+                Today
+              </Button>
+            )}
             <DatePicker date={date} setDate={setDate} />
           </div>
         </CardHeader>
