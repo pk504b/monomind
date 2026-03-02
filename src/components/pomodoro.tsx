@@ -120,7 +120,7 @@ export function Pomodoro({ date }: { date: Date }) {
           strokeWidth={8}
           className="mx-auto"
         >
-          <div className="flex flex-col items-center justify-center relative">
+          <div className="select-none flex flex-col items-center justify-center relative">
             <Badge variant="ghost" className="absolute -top-6">
               {mode === "focus" ? <Brain /> : <Coffee />}
               {getModeSettings(mode).label}

@@ -93,11 +93,11 @@ export default function TodoList({ type, date }: Props) {
   };
 
   return (
-    <div className={cn("relative", type === "today" ? "h-3/6" : "h-2/6")}>
+    <div className={cn("relative", type === "today" ? "h-4/7" : "h-2/7")}>
       <div className="absolute top-1/2 -left-12 -translate-y-1/2 -rotate-90">
         <Badge
           variant="ghost"
-          className="uppercase opacity tracking-[0.4em] text-[10px] font-semibold text-white/20"
+          className="uppercase opacity tracking-[0.4em] text-[10px] font-semibold text-white/20 select-none"
         >
           {type === "today" ? "Today" : "Later"}
         </Badge>

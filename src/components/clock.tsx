@@ -22,7 +22,9 @@ export default function Clock({ is12Hour }: { is12Hour: boolean }) {
         )}
       </div>
       <div className="mt-4 flex items-center justify-center gap-8">
-        <div className="text-3xl">{format(time, "EEE, dd MMM yyyy")}</div>
+        <div className="text-2xl tracking-widest">
+          {format(time, "EEE, dd MMM yyyy")}
+        </div>
       </div>
     </div>
   );
