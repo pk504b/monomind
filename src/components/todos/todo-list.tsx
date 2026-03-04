@@ -93,7 +93,9 @@ export default function TodoList({ type, date }: Props) {
   };
 
   return (
-    <div className={cn("relative", type === "today" ? "h-3/7" : "h-3/7")}>
+    <div
+      className={cn("relative min-h-40", type === "today" ? "h-3/7" : "h-3/7")}
+    >
       <div className="absolute top-1/2 -left-12 -translate-y-1/2 -rotate-90">
         <Badge
           variant="ghost"

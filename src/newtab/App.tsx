@@ -23,7 +23,7 @@ export default function App() {
   const is12Hour = settings?.is12Hour ?? dbMethods.seedSettings.is12Hour;
 
   return (
-    <div className="grid h-screen w-full overflow-hidden grid-cols-4 grid-rows-6 gap-4 p-2">
+    <div className="grid h-screen w-full xl:overflow-hidden xl:grid-cols-4 xl:grid-rows-6 gap-4 p-2">
       {/* DAILY NOTES */}
       <Card className="col-span-2 row-span-6">
         <CardHeader className="select-none flex flex-row items-center justify-between gap-2 text-xs uppercase text-muted-foreground">
@@ -96,7 +96,7 @@ export default function App() {
           <Clock10 className="size-3" />
           <CardTitle>Clock</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="h-full flex justify-center items-center">
           <Clock is12Hour={is12Hour} />
         </CardContent>
       </Card>

@@ -112,7 +112,7 @@ export function Pomodoro({ date }: { date: Date }) {
     100;
 
   return (
-    <div className="h-full flex flex-col justify-around">
+    <div className="h-full flex flex-col justify-around min-h-96">
       <div className="relative">
         <ProgressCircular
           value={progress}
