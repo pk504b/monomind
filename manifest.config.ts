@@ -12,8 +12,16 @@ export default defineManifest({
     48: "public/icon48.png",
     128: "public/icon128.png",
   },
-  permissions: ["newTab"],
+  action: {
+    default_icon: "public/icon48.png",
+    default_title: "Monomind",
+  },
+  permissions: ["newTab", "storage", "alarms"],
   chrome_url_overrides: {
     newtab: "src/newtab/index.html",
+  },
+  background: {
+    service_worker: "src/background.ts",
+    type: "module",
   },
 });
