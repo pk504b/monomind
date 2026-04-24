@@ -8,9 +8,9 @@ import { PomodoroMode, PomodoroState } from "@/lib/types";
 import { playBeep, ssTommss } from "@/lib/utils";
 
 const MODE_SETTINGS: Record<PomodoroMode, { time: number; label: string }> = {
-  focus: { time: 10 * 1, label: "Focus" },
-  "short-break": { time: 3 * 1, label: "Short Break" },
-  "long-break": { time: 5 * 1, label: "Long Break" },
+  focus: { time: 25 * 60, label: "Focus" },
+  "short-break": { time: 5 * 60, label: "Short Break" },
+  "long-break": { time: 15 * 60, label: "Long Break" },
 };
 
 const DEFAULT_STATE: PomodoroState = {
